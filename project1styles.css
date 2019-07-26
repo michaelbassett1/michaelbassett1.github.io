@@ -24,7 +24,7 @@ body{
 	width: 890px;
 	position: relative;
 	height: 200px;
-	background: url(images/picture1.jpg) no-repeat; 
+	background: url(picture1.jpg) no-repeat; 
 }
 
 /*moves the titles out a little bit*/ 
