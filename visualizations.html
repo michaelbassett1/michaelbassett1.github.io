@@ -1,0 +1,636 @@
+<!--HTML with all of the data visualizations-->
+
+<!--These are the google spreadsheet links that you will need later-->
+<!--https://docs.google.com/spreadsheets/d/1tbEkxtKL8MEv2JH6oq0sl-lue-C5akSDHu7vNpe8EHk/edit?usp=sharing-->
+<!--https://docs.google.com/spreadsheets/d/1tbEkxtKL8MEv2JH6oq0sl-lue-C5akSDHu7vNpe8EHk/gviz/tq-->
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+	<title>Project 1 - Michael Bassett</title>
+	<link rel="stylesheet" type="text/css" href="project1styles.css" />
+	
+		<!--load the AJAX API aka Google API-->
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	
+	<script>
+		//load the visualization API and the corechart packages. new note // because we are now in JavaScript
+		google.charts.load('current',{'packages':['corechart']});
+		
+		//set a callback to run when the Google Vis API is loaded
+		google.charts.setOnLoadCallback(visualizeSheets); //visualizeSheets is created later
+		
+		//Specify what tab we are using in google sheets, which columns will be referenced, and the below functions
+		function visualizeSheets() { 
+			//Education
+			visualizeSheetName('EDUcurrentUSD','SELECT B,C,D,E,F,G',education1ResponseHandler);
+			//visualizeSheetName('EDU_USA','SELECT B,C,D,E,F,G',education2ResponseHandler);
+			visualizeSheetName('EDU_withoutUSA','SELECT B,C,D,E,F,G',education3ResponseHandler);
+			
+			//Military
+			visualizeSheetName('MILITARYcurrentUSD','SELECT D,J,K,L,M,N',military1ResponseHandler);
+			//visualizeSheetName('MILITARY_USA','SELECT D,J,K,L,M,N',military2ResponseHandler);
+			visualizeSheetName('MILITARY_withoutUSA','SELECT D,J,K,L,M,N',military3ResponseHandler);
+			
+			//Healthcare
+			visualizeSheetName('HEALTHcurrentUSD','SELECT B,H,I,J,K,L',health1ResponseHandler);
+			//visualizeSheetName('HEALTH_USA','SELECT B,H,I,J,K,L',health2ResponseHandler);
+			visualizeSheetName('HEALTH_withoutUSA','SELECT B,H,I,J,K,L',health3ResponseHandler);
+			
+			//spending 2015
+			visualizeSheetName('2015spending','SELECT B,G,H,I,J',spendingResponseHandler);
+			
+			//military comparison 2015
+			visualizeSheetName('2015comparedtoMILITARY','SELECT B,G,H',militarycompareResponseHandler);
+			
+			//education growth 2011 2015
+			visualizeSheetName('EDUgrowth','SELECT A,E',edugrowthResponseHandler);
+			visualizeSheetName('EDUgrowth','SELECT A,D',edugrowth2ResponseHandler);
+			
+			//health growth 2014 2018
+			visualizeSheetName('HEALTHgrowth','SELECT A,E',healthgrowthResponseHandler);
+			visualizeSheetName('HEALTHgrowth','SELECT A,D',healthgrowth2ResponseHandler);
+			
+			//per capita
+			visualizeSheetName('EDUpercapita','SELECT B,G,I,N,K',eduPerCapitaResponseHandler);
+			visualizeSheetName('HEALTHpercapita2','SELECT B,L,N,T,P',healthPerCapitaResponseHandler);
+			visualizeSheetName('MILITARYpercapita','SELECT B,L,N,U,P',militaryPerCapitaResponseHandler);
+			visualizeSheetName('MILITARYpercapita2','SELECT B,L,N,U,P',military2PerCapitaResponseHandler);
+			
+			
+		} //visualizeSheets
+		
+		//Don't change this function at all
+		function visualizeSheetName(sheetName, query, responseHandler) { 
+			var queryString = encodeURIComponent(query);
+			var query = new google.visualization.Query(
+				'https://docs.google.com/spreadsheets/d/1tbEkxtKL8MEv2JH6oq0sl-lue-C5akSDHu7vNpe8EHk/gviz/tq?sheet='+sheetName+'&headers=1&tq='+queryString);
+			query.send(responseHandler);
+		} //visualizeSheetName
+		
+		
+		//each function below is for a single visualization
+
+		function education1ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Education Spending from 2011-2015 (Billions)',
+							vAxis: {title: 'Education Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#D6EAF8'}, 1:{color: '#85C1E9'}, 2: {color: '#3498DB'}, 3:{color: '#2874A6'}, 4:{color: '#1B4F72'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('education_chart1')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //education1ResponseHandler 
+		
+		function education2ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Education Spending from 2011-2015 (Billions) - USA Only',
+							vAxis: {title: 'Education Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#D6EAF8'}, 1:{color: '#85C1E9'}, 2: {color: '#3498DB'}, 3:{color: '#2874A6'}, 4:{color: '#1B4F72'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('education_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //education2ResponseHandler 
+		
+		function education3ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Education Spending from 2011-2015 (Billions) - Outlier Excluded',
+							vAxis: {title: 'Education Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#D6EAF8'}, 1:{color: '#85C1E9'}, 2: {color: '#3498DB'}, 3:{color: '#2874A6'}, 4:{color: '#1B4F72'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('education_chart3')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //education3ResponseHandler 
+		
+		function military1ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Military Spending from 2014-2018 (Billions)',
+							vAxis: {title: 'Military Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FCF3CF'}, 1:{color: '#F7DC6F'}, 2: {color: '#F1C40F'}, 3:{color: '#B7950B'}, 4:{color: '#7D6608'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('military_chart1')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //military1ResponseHandler
+		
+		function military2ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Military Spending from 2014-2018 (Billions) - USA and China',
+							vAxis: {title: 'Military Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FCF3CF'}, 1:{color: '#F7DC6F'}, 2: {color: '#F1C40F'}, 3:{color: '#B7950B'}, 4:{color: '#7D6608'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('military_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //military2ResponseHandler
+		
+		function military3ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Military Spending from 2014-2018 (Billions) - Outliers Excluded',
+							vAxis: {title: 'Military Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FCF3CF'}, 1:{color: '#F7DC6F'}, 2: {color: '#F1C40F'}, 3:{color: '#B7950B'}, 4:{color: '#7D6608'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('military_chart3')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //military3ResponseHandler
+		
+		function health1ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400,
+							title: 'Healthcare Spending from 2014-2018 (Billions)',
+							vAxis: {title: 'Healthcare Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FADBD8'}, 1:{color: '#F1948A'}, 2: {color: '#E74C3C'}, 3:{color: '#B03A2E'}, 4:{color: '#78281F'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('health_chart1')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //health1ResponseHandler
+		
+		function health2ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Healthcare Spending from 2014-2018 (Billions) - USA Only',
+							vAxis: {title: 'Healthcare Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FADBD8'}, 1:{color: '#F1948A'}, 2: {color: '#E74C3C'}, 3:{color: '#B03A2E'}, 4:{color: '#78281F'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('health_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //health2ResponseHandler
+		
+		function health3ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 5, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Healthcare Spending from 2014-2018 (Billions) - Outlier Excluded',
+							vAxis: {title: 'Healthcare Spending (Current $USD)'},
+							hAxis: {title: 'Country Code'},
+							series: {0: {color: '#FADBD8'}, 1:{color: '#F1948A'}, 2: {color: '#E74C3C'}, 3:{color: '#B03A2E'}, 4:{color: '#78281F'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('health_chart3')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //health3ResponseHandler
+		
+		function spendingResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			data.sort({column: 4, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: 'Education, Healthcare, and Military Spending as a Percentage of GDP (2015)',
+							vAxis: {title: 'Percent of GDP'},
+							hAxis: {title: 'Country Code'},
+							seriesType: 'bars',
+							series: {3: {type: 'line'}, 1:{color: '#CB4335'}, 0: {color: '#2E86C1'}, 2:{color: '#D4AC0D'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.ComboChart(
+				document.getElementById('spending2015')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //spendingResponseHandler
+		
+		function militarycompareResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			//data.sort({column: 1, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: '2015 Education and Healthcare Spending in Relation to Military Spending (Billions)',
+							vAxis: {title: 'Country Code'},
+							hAxis: {title: 'Difference in Spending Compared to Military (Current $USD)'},
+							series: {0: {color: '#2E86C1'}},
+							series: {1: {color: '#CB4335'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.BarChart(
+				document.getElementById('militarycompare2015')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //militarycompareResponseHandler
+		
+		function edugrowthResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			
+			//Set the Options
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#AED6F1','#1B4F72']}
+			};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.GeoChart(
+				document.getElementById('edugrowth_chart')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //edugrowthResponseHandler
+		
+		function edugrowth2ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			
+			//Set the Options
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#AED6F1','#1B4F72']}
+			};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.GeoChart(
+				document.getElementById('edugrowth_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //edugrowth2ResponseHandler
+		
+		function healthgrowthResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			
+			//Set the Options
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#F5B7B1','#78281F']}
+			};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.GeoChart(
+				document.getElementById('healthgrowth_chart')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //healthgrowthResponseHandler
+		
+		function healthgrowth2ResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			
+			//Set the Options
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#F5B7B1','#78281F']}
+			};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.GeoChart(
+				document.getElementById('healthgrowth_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //healthgrowth2ResponseHandler
+		
+		function eduPerCapitaResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			//data.sort({column: 1, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: '2015 Education Spending Per Capita vs 2015 GDP Per Capita',
+							vAxis: {title: 'GDP per capita ($)'},
+							hAxis: {title: 'Education Spending Per Capita ($)'},
+							bubble: {textStyle: {color: 'none'}},
+							//NOTE: I attempted to change the colors for the bubble chart. For whatever reason it does not work
+							//The google charts link stated to use "series", which I have been using throughout this project. 
+							series: {0: {color: '#E8DAEF'}, 1:{color: '#BB8FCE'}, 2: {color: '#8E44AD  '}, 3:{color: '#6C3483'}, 4:{color: '#4A235A'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.BubbleChart(
+				document.getElementById('eduPC_chart')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //eduPerCapitaResponseHandler
+		
+		function healthPerCapitaResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			//data.sort({column: 1, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: '2018 Healthcare Spending Per Capita vs 2018 GDP Per Capita',
+							vAxis: {title: 'GDP per capita ($)'},
+							hAxis: {title: 'Healthcare Spending Per Capita ($)'},
+							//colorAxis: {colors: ['#F5B7B1','#78281F']}
+							bubble: {textStyle: {color: 'none'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.BubbleChart(
+				document.getElementById('healthPC_chart')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //healthPerCapitaResponseHandler
+		
+		function militaryPerCapitaResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			//data.sort({column: 1, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: '2018 Military Spending Per Capita vs 2018 GDP Per Capita',
+							vAxis: {title: 'GDP per capita ($)'},
+							hAxis: {title: 'Military Spending Per Capita ($)'},
+							bubble: {textStyle: {color: 'none'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.BubbleChart(
+				document.getElementById('milPC_chart')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //militaryPerCapitaResponseHandler
+		
+		function military2PerCapitaResponseHandler(response) { 
+			//Get the Data
+			var data = response.getDataTable(); 
+			//data.sort({column: 1, desc: true}); 
+			
+			//Set the Options
+			var options = {height: 400, 
+							title: '2018 Military Spending Per Capita vs 2018 GDP Per Capita (Outliers Excluded)',
+							vAxis: {title: 'GDP per capita ($)'},
+							hAxis: {title: 'Military Spending Per Capita ($)'},
+							bubble: {textStyle: {color: 'none'}}
+							};
+			
+			//Create the Chart with the Options
+			var chart = new google.visualization.BubbleChart(
+				document.getElementById('milPC_chart2')
+			);
+			
+			//Draw the Chart
+			chart.draw(data,options); 
+			
+		} //military2PerCapitaResponseHandler
+	</script>
+	
+	
+</head>
+
+<body>
+	<div id="main">
+		<div id="header">
+			<div id="title">
+				<div id="title_text">
+					<h1>Project 1</h1>
+					<h2>Michael Bassett</h2>
+				</div> <!--title_text-->
+			</div> <!--title-->
+			
+			<div id="tabs1">
+				<ul id="tabs2">
+					<li><a href="introduction.html">Introduction</a></li>
+					<li class="selected"><a href="visualizations.html">Visualizations</a></li>
+					<li><a href="sources.html">Sources</a></li>
+				</ul> <!--tabs2-->
+			</div> <!--tabs1-->
+		</div> <!--header-->
+		
+		
+		<div id="website_content">
+			<div id="content">
+				<h1>Data Visualizations</h1>
+				
+				
+				<h2>EDUCATION SPENDING</h2>
+				<div id="education_chart1" style="width: 825px; height: 400px;"></div>
+				<p></p>
+				<!--<div id="education_chart2" style="width: 825px; height: 400px;"></div>
+				<p></p>-->
+				<div id="education_chart3" style="width: 825px; height: 400px;"></div>
+				<p>The first several charts are a general look at education, healthcare, and military spending over time.
+				Due to a lack of recent education figures, the first chart displays data from 2011-2015. The USA has led the pack for all 5 years, with 2015 
+				spending at $469 billion. After removing our outlier from the data, it is clearly shown that Japan comes in second (despite decreasing every year) with $60 billion. 
+				Germany, Canada, and France round out the top five.</p>
+				
+				
+				<h2>HEALTHCARE SPENDING</h2>
+				<div id="health_chart1" style="width: 825px; height: 400px;"></div>
+				<p></p>
+				<!--<div id="health_chart2" style="width: 825px; height: 400px;"></div>
+				<p></p>-->
+				<div id="health_chart3" style="width: 825px; height: 400px;"></div>
+				<p>Upon looking at healthcare spending (from 2014-2018), we see a similar trend. The United States is once again miles ahead of second place, with 2018 spending of $3.471 trillion compared to 
+				Japan's $542 billion. Without the USA, the chart shows that the remaining countries belong in the $20-550 billion range. Unfortunately, 2017 and 2018 data was not
+				available for a handful of countries, but one can easily see that China spends a significant amount of money on healthcare as well.</p>
+				
+
+				<h2>MILITARY SPENDING</h2>
+				<div id="military_chart1" style="width: 825px; height: 400px;"></div>
+				<p></p>
+				<!--<div id="military_chart2" style="width: 825px; height: 400px;"></div>
+				<p></p>-->
+				<div id="military_chart3" style="width: 825px; height: 400px;"></div>
+				<p>Military spending has two big players, with the USA and China spending significantly more than their peers with no signs of slowing down. Both countries have an increase in spending from 
+				2014 to 2018, with the USA now at $648 billion and China at $249 billion. None of the remaining countries spent more than $70 billion in 2018, with Saudi Arabia, India, 
+				and France at the remaining spots in the top five. </p>
+		
+				
+				<h2>SPENDING DATA COMPARED TO COUNTRY GDP</h2>
+				<div id="spending2015" style="width: 825px; height: 400px;"></div>
+				<p>This visualization looks at education, healthcare, and military spending as a percentage of country GDP. The green line represents the average percentage
+				for each country. Here we can see that most if not all countries in the G20 prioritize healthcare expenditures over education and military expenses. Russia
+				has an interesting breakout, with its military percentage(4.87%) just under healthcare(5.29%).</p>
+				
+				
+				<h2>EDUCATION AND HEALTHCARE DATA COMPARED TO MILITARY SPENDING</h2>
+				<div id="militarycompare2015" style="width: 825px; height: 400px;"></div>
+				<p>When comparing healthcare and military spending, every single nation spent more on healthcare, which was also shown in the previous chart. 
+				Japan, Germany, and France had particularly large differences, with all three spending at least $220 more on healthcare than military expenses. 
+				Education spending, however, was a mixed bag, with some countries spending more and others spending less than on their militaries.
+				The USA was left out here as it was (no surprises) an outlier.</p>
+				
+				
+				<h2>PER CAPITA COMPARISON - 2015 EDUCATION AND GDP</h2>
+				<div id="eduPC_chart" style="width: 825px; height: 400px;"></div>
+				<p>The next few bubble charts compare Education, Healthcare, and Military Spending per capita with GDP per capita. In addition, 
+				for informational purposes the color of the bubbles denotes the country's continent, while the size of each bubble demonstrates the 
+				country's population. With regards to Education Spending, the country's in the chart follow a fairly straight line, signifying that as
+				education spending per capita increases, so too does GDP per capita.The USA, Australia, and Canada tend to spend more, while Russia, Brazil, Mexico, and
+				Turkey spend less per person. </p>
+				
+				<h2>PER CAPITA COMPARISON - 2018 HEALTHCARE AND GDP</h2>
+				<div id="healthPC_chart" style="width: 825px; height: 400px;"></div>
+				<p>Similar to education spending per capita, healthcare spending per capita also has a positive linear relationship
+				with GDP per capita, which makes sense intuitively. The United States spends drastically more than every country, which has been a common
+				trend in almost every visualization. Mexico and Turkey are at the other end of the spectrum, with relatively low per capita figures. Interestingly, 
+				the European nations are located quite close to one another on the chart.</p>
+				
+				
+				<h2>PER CAPITA COMPARISON - 2018 MILITARY AND GDP</h2>
+				<div id="milPC_chart" style="width: 825px; height: 400px;"></div>
+				<div id="milPC_chart2" style="width: 825px; height: 400px;"></div>
+				<p>When comparing Military and GDP per capita, what sticks out initially is the presence of two outliers: the USA and Saudi Arabia. Saudi 
+				Arabia has the largest Military Spending per capita of all countries in the chart at $2,004.59, while their GDP per capita is just $23,219.13, which
+				is in the middle of the pack. The USA as we expect has large figures across the board. Upon taking those outliers out of the equation, we can see
+				more clearly that India, Indonesia, South Africa, and Mexico have lower Military Spending per capita than their peers, while Australia tends to be close to 
+				the top for all of these bubble charts. Lastly, looking at continents European countries tend to spend more than Asian nations. </p>
+				
+				
+				<h2>EDUCATION SPENDING OVER TIME</h2>
+				<h2>Change in Education Spending from 2011-2015 (Billions)</h2>
+				<div id="edugrowth_chart2" style="width: 825px; height: 400px;"></div>
+				<h2>Change in Education Spending from 2011-2015 (Percent Change)</h2>
+				<div id="edugrowth_chart" style="width: 825px; height: 400px;"></div>
+				<p>The maps above demonstrate how education expenditures have changed over time for select G20 countries.
+				The USA had the largest absolute increase, with education spending increasing by $43 billion from 2011 to 2015. Meanwhile, Japan's education
+				expenses decreased by $32 billion during that span. From a percent change perspective, Australia takes the top spot with a 20.46% increase over 5 years. 
+				In contrast, Russia decreased their education spending by 40.90%. </p>
+				
+				
+				<h2>HEALTHCARE SPENDING OVER TIME</h2>
+				<h2>Change in Healthcare Spending from 2014-2018 (Billions)</h2>
+				<div id="healthgrowth_chart2" style="width: 825px; height: 400px;"></div>
+				<h2>Change in Healthcare Spending from 2014-2018 (Percent Change)</h2>
+				<div id="healthgrowth_chart" style="width: 825px; height: 400px;"></div>
+				<p>From 2014 to 2018, the United States managed to increase their healthcare spending by $589 billion. On the other end of the spectrum, the United Kingdom
+				decreased their spending, but by just $20 billion. South Korea leads the group of nations in percent change, with healthcare expenses increasing by 36.29% in the last five years. 
+				Meawhile, Turkey decreased their spending by 21.25%. </p>
+			</div> <!--content-->
+		</div> <!--website_content-->
+	</div> <!--main-->
+
+</body>
+
+</html>
